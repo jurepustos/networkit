@@ -411,14 +411,18 @@ void sortEdgesByWeight(Graph &G, bool decreasing = false);
 /**
  * Given a directed graph G, the topology sort algorithm creates one valid topology order of nodes.
  * Undirected graphs are not accepted as input, since a topology sort is a linear ordering of
- * vertices such that for every edge u -> v, node u comes before v in the ordering.
+ * vertices such that for every edge u -> v, node u comes before v in the ordering. If the input
+ * graph has cycles, the algorithm throws an error. If the input graph does not have continuous node
+ * ids that start at 0, a mapping to continuous node ids needs to be passed.
  *
  * This is a helper function. Instead of calling it via GraphTools, it is also possible to create a
  * TopologicalSort-object from the base-class.
  * @param   G           Directed input graph
+ * @param   nodeIdMap   A mapping to continuous node ids.
  * @return              A vector of node-ids sorted according to their topology.
  */
-std::vector<node> topologicalSort(const Graph &G);
+std::vector<node> topologicalSort(const Graph &G,
+                                  const std::unordered_map<node, node> *nodeIdMap = nullptr);
 
 /**
  * Randomizes the weights of the given graph. The weights are uniformly distributed in

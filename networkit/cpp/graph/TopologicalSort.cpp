@@ -8,7 +8,8 @@
 
 namespace NetworKit {
 
-TopologicalSort::TopologicalSort(const Graph &G) : G(&G) {
+TopologicalSort::TopologicalSort(const Graph &G, const std::unordered_map<node, node> *nodeIdMap)
+    : G(&G), nodeIdMap(nodeIdMap) {
     if (!G.isDirected())
         throw std::runtime_error("Topological sort is defined for directed graphs only.");
 }
@@ -19,25 +20,43 @@ void TopologicalSort::run() {
     std::stack<node> nodeStack;
 
     G->forNodes([&](node u) {
-        if (topSortMark[u] == NodeMark::PERM)
+        node mappedU;
+        if (nodeIdMap == nullptr)
+            mappedU = u;
+        else
+            mappedU = nodeIdMap->at(u);
+
+        if (topSortMark[mappedU] == NodeMark::PERM)
             return;
 
         nodeStack.push(u);
         do {
             node v = nodeStack.top();
-            if (topSortMark[v] != NodeMark::NONE) {
+            node mappedV;
+            if (nodeIdMap == nullptr)
+                mappedV = v;
+            else
+                mappedV = nodeIdMap->at(v);
+
+            if (topSortMark[mappedV] != NodeMark::NONE) {
                 nodeStack.pop();
-                if (topSortMark[v] == NodeMark::TEMP) {
-                    topSortMark[v] = NodeMark::PERM;
+                if (topSortMark[mappedV] == NodeMark::TEMP) {
+                    topSortMark[mappedV] = NodeMark::PERM;
                     topology[current] = v;
                     current--;
                 }
             } else {
-                topSortMark[v] = NodeMark::TEMP;
+                topSortMark[mappedV] = NodeMark::TEMP;
                 G->forNeighborsOf(v, [&](node w) {
-                    if (topSortMark[w] == NodeMark::NONE)
+                    node mappedW;
+                    if (nodeIdMap == nullptr)
+                        mappedW = w;
+                    else
+                        mappedW = nodeIdMap->at(w);
+
+                    if (topSortMark[mappedW] == NodeMark::NONE)
                         nodeStack.push(w);
-                    else if (topSortMark[w] == NodeMark::TEMP)
+                    else if (topSortMark[mappedW] == NodeMark::TEMP)
                         throw std::runtime_error("Error: the input graph has cycles.");
                 });
             }

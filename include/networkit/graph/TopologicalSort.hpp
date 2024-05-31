@@ -15,7 +15,9 @@ namespace NetworKit {
 /**
  * Given a directed graph G, the topology sort algorithm creates one valid topology order of nodes.
  * Undirected graphs are not accepted as input, since a topology sort is a linear ordering of
- * vertices such that for every edge u -> v, node u comes before v in the ordering.
+ * vertices such that for every edge u -> v, node u comes before v in the ordering. If the input
+ * graph has cycles, the algorithm throws an error. If the input graph does not have continuous node
+ * ids that start at 0, a mapping to continuous node ids needs to be passed.
  */
 class TopologicalSort final : public Algorithm {
 public:
@@ -24,8 +26,9 @@ public:
      * sort is defined for directed graphs only.
      *
      * @param G The input graph.
+     * @param nodeIdMap A mapping to continuous node ids.
      */
-    TopologicalSort(const Graph &G);
+    TopologicalSort(const Graph &G, const std::unordered_map<node, node> *nodeIdMap = nullptr);
 
     /**
      * Execute the algorithm. The algorithm is not parallel.
@@ -46,6 +49,8 @@ private:
     enum class NodeMark : unsigned char { NONE, TEMP, PERM };
 
     const Graph *G;
+
+    const std::unordered_map<node, node> *nodeIdMap;
 
     // Used to mark the status of each node, one vector per thread
     std::vector<NodeMark> topSortMark;
