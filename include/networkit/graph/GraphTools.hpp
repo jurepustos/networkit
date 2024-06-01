@@ -2,6 +2,7 @@
 #ifndef NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
 #define NETWORKIT_GRAPH_GRAPH_TOOLS_HPP_
 
+#include <optional>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -421,8 +422,9 @@ void sortEdgesByWeight(Graph &G, bool decreasing = false);
  * @param   nodeIdMap   A mapping to continuous node ids.
  * @return              A vector of node-ids sorted according to their topology.
  */
-std::vector<node> topologicalSort(const Graph &G,
-                                  const std::unordered_map<node, node> *nodeIdMap = nullptr);
+std::vector<node> topologicalSort(
+    const Graph &G,
+    std::optional<std::reference_wrapper<std::unordered_map<node, node>>> nodeIdMap = {});
 
 /**
  * Randomizes the weights of the given graph. The weights are uniformly distributed in

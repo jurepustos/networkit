@@ -8,7 +8,9 @@
 
 namespace NetworKit {
 
-TopologicalSort::TopologicalSort(const Graph &G, const std::unordered_map<node, node> *nodeIdMap)
+TopologicalSort::TopologicalSort(
+    const Graph &G,
+    std::optional<std::reference_wrapper<const std::unordered_map<node, node>>> nodeIdMap)
     : G(&G), nodeIdMap(nodeIdMap) {
     if (!G.isDirected())
         throw std::runtime_error("Topological sort is defined for directed graphs only.");
@@ -21,10 +23,10 @@ void TopologicalSort::run() {
 
     G->forNodes([&](node u) {
         node mappedU;
-        if (nodeIdMap == nullptr)
-            mappedU = u;
+        if (nodeIdMap.has_value())
+            mappedU = nodeIdMap.value().get().at(u);
         else
-            mappedU = nodeIdMap->at(u);
+            mappedU = u;
 
         if (topSortMark[mappedU] == NodeMark::PERM)
             return;
@@ -33,10 +35,10 @@ void TopologicalSort::run() {
         do {
             node v = nodeStack.top();
             node mappedV;
-            if (nodeIdMap == nullptr)
-                mappedV = v;
+            if (nodeIdMap.has_value())
+                mappedU = nodeIdMap.value().get().at(v);
             else
-                mappedV = nodeIdMap->at(v);
+                mappedU = v;
 
             if (topSortMark[mappedV] != NodeMark::NONE) {
                 nodeStack.pop();
@@ -49,10 +51,10 @@ void TopologicalSort::run() {
                 topSortMark[mappedV] = NodeMark::TEMP;
                 G->forNeighborsOf(v, [&](node w) {
                     node mappedW;
-                    if (nodeIdMap == nullptr)
-                        mappedW = w;
+                    if (nodeIdMap.has_value())
+                        mappedU = nodeIdMap.value().get().at(w);
                     else
-                        mappedW = nodeIdMap->at(w);
+                        mappedU = w;
 
                     if (topSortMark[mappedW] == NodeMark::NONE)
                         nodeStack.push(w);
