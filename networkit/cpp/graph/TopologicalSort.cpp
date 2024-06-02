@@ -36,9 +36,9 @@ void TopologicalSort::run() {
             node v = nodeStack.top();
             node mappedV;
             if (nodeIdMap.has_value())
-                mappedU = nodeIdMap.value().get().at(v);
+                mappedV = nodeIdMap.value().get().at(v);
             else
-                mappedU = v;
+                mappedV = v;
 
             if (topSortMark[mappedV] != NodeMark::NONE) {
                 nodeStack.pop();
@@ -52,9 +52,9 @@ void TopologicalSort::run() {
                 G->forNeighborsOf(v, [&](node w) {
                     node mappedW;
                     if (nodeIdMap.has_value())
-                        mappedU = nodeIdMap.value().get().at(w);
+                        mappedW = nodeIdMap.value().get().at(w);
                     else
-                        mappedU = w;
+                        mappedW = w;
 
                     if (topSortMark[mappedW] == NodeMark::NONE)
                         nodeStack.push(w);
